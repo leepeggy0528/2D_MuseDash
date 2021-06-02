@@ -636,6 +636,7 @@ ParticleSystemRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 10308, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -5781,6 +5782,7 @@ ParticleSystemRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: e0294585d6eb520419581b2abfe55538, type: 2}
+  - {fileID: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -10534,6 +10536,7 @@ ParticleSystemRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: 9f3cd487d5fd9454ba3ab14c524c3de6, type: 2}
+  - {fileID: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -15262,6 +15265,7 @@ GameObject:
   - component: {fileID: 2144140451}
   - component: {fileID: 2144140455}
   - component: {fileID: 2144140454}
+  - component: {fileID: 2144140456}
   m_Layer: 0
   m_Name: role
   m_TagString: Untagged
@@ -15383,9 +15387,26 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDrag: 0
   m_AngularDrag: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 2.5
   m_Material: {fileID: 0}
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
+--- !u!114 &2144140456
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2144140450}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3ab79c5585774db4a9e997c7430d5f1b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  jump: 700
+  blood: 500
+  isGround: 0
+  groundRadius: 0.3
+  grounOffset: {x: -0.1220362, y: -1.39, z: 0}

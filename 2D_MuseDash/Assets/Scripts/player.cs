@@ -6,18 +6,28 @@ public class player : MonoBehaviour
 {
     #region 欄位
     [Header("跳躍高度"), Range(0, 3000)]
-    public float jump=100;
+    public float jump=1000;
     [Range(0, 2000)]
     public int blood = 500;
     [Header("是否在地上"),Tooltip("可調整位置")]
-    public bool flood = false;
+    public bool isGround = false;
+    [Header("查看地板半徑"), Range(0.1f, 1f)]
+    public float groundRadius = 0.5f;
+    [Header("檢查地板的位移")]
+    public Vector3 grounOffset;
+    [Header("音效")]
+    public AudioClip soundjump;
+    public AudioClip soundattack;
 
     private int score;
     private AudioClip ac1;
     private AudioClip ac2;
     private AudioSource aus;
-    private Rigidbody2D rb2D;
+    private Rigidbody2D rig;
     private Animator ani;
+
+
+
     #endregion
 
     #region 方式
@@ -26,7 +36,24 @@ public class player : MonoBehaviour
     /// </summary>
     private void Jump()
     {
-         
+        if (Input.GetKeyDown(KeyCode.F) && isGround)
+        {
+            ani.SetTrigger("跳躍觸發");
+            rig.AddForce(new Vector2(0, jump));//剛體,添加推力(二維向量)
+        }
+        //碰到物件=2D物理(覆蓋中心,半徑)
+        //圖層 Laymask 寫法 1<< 8
+        Collider2D hit = Physics2D.OverlapCircle(transform.position + grounOffset, groundRadius,1);
+
+        //如果碰到東西存在且碰到的名稱是地板就代表在地板上
+        if(hit && hit.name == "地板碰撞")
+        {
+            isGround = true;
+        }
+        else
+        {
+            isGround = false;
+        }
     }
 
     /// <summary>
@@ -34,7 +61,10 @@ public class player : MonoBehaviour
     /// </summary>
     private void attack()
     {
-
+        if (Input.GetKeyDown(KeyCode.J))
+        {
+            ani.SetTrigger("攻擊觸發");
+        }
     }
 
     /// <summary>
@@ -62,5 +92,29 @@ public class player : MonoBehaviour
     {
 
     }
+    #endregion
+    
+    # region 事件
+        private void Start()
+        {
+            //動畫元件=取得元件<泛形>()
+            ani = GetComponent<Animator>();
+            rig = GetComponent<Rigidbody2D>();
+    }
+
+        private void Update()
+        {
+            Jump();
+            attack();
+        }
+
+        //繪製圖示:輔助用
+        private void OnDrawGizmos()
+        {
+            //決定顏色
+            Gizmos.color = new Color(1, 0, 0, 0.35f);
+            //繪製圖形
+            Gizmos.DrawSphere(transform.position + grounOffset, groundRadius);
+        }
     #endregion
 }
