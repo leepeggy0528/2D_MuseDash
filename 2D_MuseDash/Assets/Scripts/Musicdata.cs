@@ -5,6 +5,9 @@ using UnityEngine;
 [CreateAssetMenu(menuName ="peggy/MusicData", fileName ="MusicgameBase")]
 public class Musicdata : ScriptableObject
 {
+    [Header("音樂")]
+    public AudioClip music;
+
     [Header("音樂開始前的等待時間"),Range(0,10)]
     public float timeWait=2f;
     [Header("節點間隔時間"), Range(0, 5)]
