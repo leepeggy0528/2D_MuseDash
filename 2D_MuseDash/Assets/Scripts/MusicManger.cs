@@ -9,9 +9,9 @@ public class MusicManger : MonoBehaviour
     [Header("生成物件:下方")]
     public GameObject objdown;
     [Header("生成位置:上方")]
-    public GameObject pointup;
+    public Transform pointup;
     [Header("生成位置:下方")]
-    public GameObject pointdown;
+    public Transform pointdown;
 
     [Header("此關卡的音樂資料")]
     public Musicdata musicdata;
@@ -55,14 +55,18 @@ public class MusicManger : MonoBehaviour
                 case PointType.none:
                     break;
                 case PointType.up:
-                    Instantiate(objup,pointup.position, Quaternion.identity);
+                    GameObject oUp = Instantiate(objup, pointup.position, Quaternion.identity);
+                    oUp.AddComponent<Musicpoint>().speed = musicdata.speed;
                     break;
                 case PointType.down:
-                    Instantiate(objdown, pointdown.position, Quaternion.identity);
+                    GameObject oDown = Instantiate(objdown, pointdown.position, Quaternion.identity);
+                    oDown.AddComponent<Musicpoint>().speed = musicdata.speed;
                     break;
                 case PointType.both:
-                    Instantiate(objup, pointup.position, Quaternion.identity);
-                    Instantiate(objdown, pointdown.position, Quaternion.identity);
+                    GameObject oBUp = Instantiate(objup, pointup.position, Quaternion.identity);
+                    GameObject oBDown = Instantiate(objdown, pointdown.position, Quaternion.identity);
+                    oBUp.AddComponent<Musicpoint>().speed = musicdata.speed;
+                    oBDown.AddComponent<Musicpoint>().speed = musicdata.speed;
                     break;
             }
 

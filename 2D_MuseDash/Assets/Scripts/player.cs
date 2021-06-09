@@ -20,8 +20,6 @@ public class player : MonoBehaviour
     public AudioClip soundattack;
 
     private int score;
-    private AudioClip ac1;
-    private AudioClip ac2;
     private AudioSource aus;
     private Rigidbody2D rig;
     private Animator ani;
@@ -36,10 +34,18 @@ public class player : MonoBehaviour
     /// </summary>
     private void Jump()
     {
-        if (Input.GetKeyDown(KeyCode.F) && isGround)
+        if (Input.GetKeyDown(KeyCode.J) && isGround)
         {
-            ani.SetTrigger("跳躍觸發");
+            ani.SetTrigger("jump");
             rig.AddForce(new Vector2(0, jump));//剛體,添加推力(二維向量)
+            aus.PlayOneShot(soundjump);
+        }
+        else if(Input.GetKeyDown(KeyCode.J) && !isGround)
+        {
+            ani.SetTrigger("jump");
+            transform.position = new Vector3(-6.87f, 0.6f, 0.96f);
+            rig.velocity = Vector2.zero;
+            aus.PlayOneShot(soundjump);
         }
         //碰到物件=2D物理(覆蓋中心,半徑)
         //圖層 Laymask 寫法 1<< 8
@@ -61,9 +67,11 @@ public class player : MonoBehaviour
     /// </summary>
     private void attack()
     {
-        if (Input.GetKeyDown(KeyCode.J))
+        if (Input.GetKeyDown(KeyCode.R))
         {
-            ani.SetTrigger("攻擊觸發");
+            ani.SetTrigger("run");
+            transform.position = new Vector3(-6.87f, -3.296f, 0.96f);
+            aus.PlayOneShot(soundattack);
         }
     }
 
@@ -100,6 +108,7 @@ public class player : MonoBehaviour
             //動畫元件=取得元件<泛形>()
             ani = GetComponent<Animator>();
             rig = GetComponent<Rigidbody2D>();
+            aus = GetComponent<AudioSource>();
     }
 
         private void Update()

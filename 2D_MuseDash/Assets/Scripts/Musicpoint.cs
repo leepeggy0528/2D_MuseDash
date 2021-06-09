@@ -4,15 +4,15 @@ using UnityEngine;
 
 public class Musicpoint : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    [Header("移動速度")]
+    public float speed;
+    private void Move()
     {
-        
+        transform.Translate(-speed * Time.deltaTime, 0, 0);
     }
 
-    // Update is called once per frame
-    void Update()
+    private void Update()
     {
-        
+        Move();
     }
 }
