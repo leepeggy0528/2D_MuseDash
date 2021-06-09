@@ -37,6 +37,38 @@ public class MusicManger : MonoBehaviour
     {
         print("開始生成");
 
-        Instantiate(objup); //生成物件 (object.Instantiate(object) <- 原寫法)
+        //呼叫協同程序
+        StartCoroutine(SpawnPoint());
+
+        
+    }
+
+    ///<summary>
+    ///間隔生成節點
+    /// </summary>
+    private IEnumerator SpawnPoint()
+    {
+        for (int i = 0; i < musicdata.points.Length; i++)
+        {
+            switch (musicdata.points[i])
+            {
+                case PointType.none:
+                    break;
+                case PointType.up:
+                    Instantiate(objup,pointup.position, Quaternion.identity);
+                    break;
+                case PointType.down:
+                    Instantiate(objdown, pointdown.position, Quaternion.identity);
+                    break;
+                case PointType.both:
+                    Instantiate(objup, pointup.position, Quaternion.identity);
+                    Instantiate(objdown, pointdown.position, Quaternion.identity);
+                    break;
+            }
+
+            //Instantiate(objup); //生成物件 (object.Instantiate(object) <- 原寫法)
+
+            yield return new WaitForSeconds(musicdata.interval); //等待秒數
+        }
     }
 }
