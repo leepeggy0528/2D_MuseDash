@@ -1,9 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class MusicManger : MonoBehaviour
 {
+    #region 欄位
     [Header("生成物件:上方")]
     public GameObject objup;
     [Header("生成物件:下方")]
@@ -16,10 +18,30 @@ public class MusicManger : MonoBehaviour
     [Header("此關卡的音樂資料")]
     public Musicdata musicdata;
 
+
     ///<summary>
     ///Music-Music object
     /// </summary>
     private AudioSource aud;
+
+    ///<summary>
+    ///介面:血條
+    /// </summary>
+    private Image imgHp;
+    ///<summary>
+    ///介面:血量
+    /// </summary>
+    private Text textHp;
+
+    ///<summary>
+    ///player information
+    /// </summary>
+    private player player;
+
+    private float maxHp;
+    #endregion
+
+
 
     private void Start()
     {
@@ -27,7 +49,20 @@ public class MusicManger : MonoBehaviour
         aud.clip = musicdata.music; //指定音源
         aud.Play(); //播放音樂
 
+        imgHp = GameObject.Find("血條").GetComponent<Image>();
+        textHp = GameObject.Find("血量").GetComponent<Text>();
+
+        player = GameObject.Find("role").GetComponent<player>();
+        maxHp = player.blood;
+        textHp.text = player.blood + "/" + maxHp;
+
         Invoke("StartMusic", musicdata.timeWait); //等待後開始生成
+
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        hit();
     }
 
     ///<summary>
@@ -75,4 +110,12 @@ public class MusicManger : MonoBehaviour
             yield return new WaitForSeconds(musicdata.interval); //等待秒數
         }
     }
+
+    private void hit()
+    {
+        player.blood -= 20;
+        textHp.text = player.blood + "/" + maxHp; //更新血量文字
+        imgHp.fillAmount = player.blood / maxHp; //更新血條
+    }
 }
+
