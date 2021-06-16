@@ -39,6 +39,12 @@ public class MusicManger : MonoBehaviour
     private player player;
 
     private float maxHp;
+
+    ///<summary>
+    ///player information
+    /// </summary>
+    private CanvasGroup groupFinal;
+
     #endregion
 
 
@@ -55,6 +61,8 @@ public class MusicManger : MonoBehaviour
         player = GameObject.Find("role").GetComponent<player>();
         maxHp = player.blood;
         textHp.text = player.blood + "/" + maxHp;
+
+        groupFinal = GameObject.Find("end page").GetComponent<CanvasGroup>();
 
         Invoke("StartMusic", musicdata.timeWait); //等待後開始生成
 
@@ -116,6 +124,22 @@ public class MusicManger : MonoBehaviour
         player.blood -= 20;
         textHp.text = player.blood + "/" + maxHp; //更新血量文字
         imgHp.fillAmount = player.blood / maxHp; //更新血條
+
+        if (player.blood <= 0) StartCoroutine(Gameover());
+    }
+
+    private IEnumerator Gameover()
+    {
+        player.dead();
+
+        for (int i = 0; i < 40; i++)
+        {
+            groupFinal.alpha += 0.02f; // 0.01 透明度
+            yield return new WaitForSeconds(0.05f); //wait 2 seconds
+        }
+
+        groupFinal.interactable = true;
+        groupFinal.blocksRaycasts = true;
     }
 }
 
