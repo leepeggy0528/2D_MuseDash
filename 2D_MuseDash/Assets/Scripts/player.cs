@@ -25,7 +25,6 @@ public class player : MonoBehaviour
     private Animator ani;
 
 
-
     #endregion
 
     #region 方式
@@ -115,8 +114,6 @@ public class player : MonoBehaviour
         private void Update()
         {
         if (dead()) return;    
-        Jump();
-            attack();
         }
 
         //繪製圖示:輔助用

@@ -18,6 +18,20 @@ public class MusicManger : MonoBehaviour
     [Header("此關卡的音樂資料")]
     public Musicdata musicdata;
 
+    [Header("判定位置:上方")]
+    public Transform pointCheckup;
+    [Header("判定位置:下方")]
+    public Transform pointCheckdown;
+
+    [Header("判定距離-perfect,good,miss")]
+    public float rangePerfect = 0.5f;
+    public float rangeGood = 0.8f;
+    public float rangeMiss = 1.1f;
+
+    [Header("上方節點檢查名稱")]
+    public string nameup = "藍鳥";
+
+    public AreaType areaType;
 
     ///<summary>
     ///Music-Music object
@@ -47,6 +61,16 @@ public class MusicManger : MonoBehaviour
 
     #endregion
 
+    #region 事件
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = new Color(0, 0, 1, 0.8f);
+        Gizmos.DrawSphere(pointCheckup.position, rangePerfect);
+        Gizmos.color = new Color(0, 1, 0, 0.3f);
+        Gizmos.DrawSphere(pointCheckup.position, rangeGood);
+        Gizmos.color = new Color(1, 0, 0, 0.5f);
+        Gizmos.DrawSphere(pointCheckup.position, rangeMiss);
+    }
 
 
     private void Start()
@@ -73,6 +97,13 @@ public class MusicManger : MonoBehaviour
         hit();
     }
 
+    private void Update()
+    {
+        Checkpoint();
+    }
+    #endregion
+
+    #region 方法
     ///<summary>
     ///開始音樂節點生成
     /// </summary>
@@ -88,7 +119,7 @@ public class MusicManger : MonoBehaviour
 
     ///<summary>
     ///間隔生成節點
-    /// </summary>
+    /// </summary> cf
     private IEnumerator SpawnPoint()
     {
         for (int i = 0; i < musicdata.points.Length; i++)
@@ -140,6 +171,36 @@ public class MusicManger : MonoBehaviour
 
         groupFinal.interactable = true;
         groupFinal.blocksRaycasts = true;
+    }
+
+    private void Checkpoint()
+    {
+        Collider2D hitMiss = Physics2D.OverlapCircle(pointCheckup.position, rangeMiss);
+        Collider2D hitGood = Physics2D.OverlapCircle(pointCheckup.position, rangeGood);
+        Collider2D hitPerfect = Physics2D.OverlapCircle(pointCheckup.position, rangePerfect);
+
+        if(hitPerfect && hitPerfect.name.Contains(nameup))
+        {
+            areaType = AreaType.perfect;
+        }
+        else if (hitGood && hitGood.name.Contains(nameup))
+        {
+            areaType = AreaType.good;
+        }
+        else if (hitMiss && hitMiss.name.Contains(nameup))
+        {
+            areaType = AreaType.miss;
+        }
+        else
+        {
+            areaType = AreaType.none;
+        }
+    }
+    #endregion
+
+    public enum AreaType
+    {
+        none,perfect,good,miss
     }
 }
 
