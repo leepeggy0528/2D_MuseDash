@@ -62,6 +62,16 @@ public class MusicManger : MonoBehaviour
     #endregion
 
     #region 事件
+    /// <summary>
+    /// starup
+    /// </summary>
+    private ParticleSystem psUp;
+
+    /// <summary>
+    /// stardown
+    /// </summary>
+    private ParticleSystem psDown;
+
     private void OnDrawGizmos()
     {
         Gizmos.color = new Color(0, 0, 1, 0.8f);
@@ -90,6 +100,7 @@ public class MusicManger : MonoBehaviour
 
         Invoke("StartMusic", musicdata.timeWait); //等待後開始生成
 
+        textScore = GameObject.Find("分數").GetComponent<Text>();
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -100,6 +111,7 @@ public class MusicManger : MonoBehaviour
     private void Update()
     {
         Checkpoint();
+        Clickcheck();
     }
     #endregion
 
@@ -173,6 +185,11 @@ public class MusicManger : MonoBehaviour
         groupFinal.blocksRaycasts = true;
     }
 
+    /// <summary>
+    /// 用來保存進入檢查區域的的音樂節點-用來刪除用
+    /// </summary>
+    private GameObject objPoint;
+
     private void Checkpoint()
     {
         Collider2D hitMiss = Physics2D.OverlapCircle(pointCheckup.position, rangeMiss);
@@ -182,19 +199,84 @@ public class MusicManger : MonoBehaviour
         if(hitPerfect && hitPerfect.name.Contains(nameup))
         {
             areaType = AreaType.perfect;
+            objPoint = hitPerfect.gameObject;
         }
         else if (hitGood && hitGood.name.Contains(nameup))
         {
             areaType = AreaType.good;
+            objPoint = hitGood.gameObject;
         }
         else if (hitMiss && hitMiss.name.Contains(nameup))
         {
             areaType = AreaType.miss;
+            objPoint = hitMiss.gameObject;
         }
         else
         {
             areaType = AreaType.none;
+            objPoint = null;
         }
+    }
+
+    private void Clickcheck()
+    {
+        if (Input.GetKeyDown(KeyCode.F))
+        {
+            switch (areaType)
+            {
+                case AreaType.none:
+                    break;
+                case AreaType.perfect:
+                    AddScore(30);
+                    Destroy(objPoint);
+                    psUp.Play();
+                    break;
+                case AreaType.good:
+                    AddScore(15);
+                    Destroy(objPoint);
+                    psUp.Play();
+                    break;
+                case AreaType.miss:
+                    Destroy(objPoint);
+                    break;
+            }
+        }
+    }
+
+    /// <summary>
+    /// 文字介面:分數
+    /// </summary>
+    private Text textScore;
+
+    /// <summary>
+    /// score
+    /// </summary>
+    private int score;
+
+    /// <summary>
+    /// 添加分數
+    /// </summary>
+    /// <param name="add">要添加的分數</param>
+    private void AddScore(int add)
+    {
+        score += add;
+        textScore.text = "Score:" + score;
+    }
+
+    [Header("打擊文字")]
+    public GameObject objClickText;
+
+    /// <summary>
+    /// show perfect
+    /// </summary>
+    /// <param name="showText">show text which I want to show.</param>
+    /// <returns></returns>
+    private IEnumerator ShowText(string showText)
+    {
+        GameObject temp = Instantiate(objClickText);
+        Text tempText = temp.GetComponent<Text>();
+        tempText.text = showText;
+        yield return new WaitForSeconds(0.1f);
     }
     #endregion
 
