@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class MusicManger : MonoBehaviour
 {
     #region 欄位
+    #region Public
     [Header("生成物件:上方")]
     public GameObject objup;
     [Header("生成物件:下方")]
@@ -31,8 +32,25 @@ public class MusicManger : MonoBehaviour
     [Header("上方節點檢查名稱")]
     public string nameup = "藍鳥";
 
-    public AreaType areaType;
+    [Header("下方節點檢查名稱")]
+    public string namedown = "粉紅兔";
 
+    [Header("打擊文字")]
+    public GameObject objClickText;
+
+    [Header("hit color:perfect, good, miss")]
+    public Color cPerfect;
+    public Color cGood;
+    public Color cMiss;
+
+    /// <summary>
+    /// note point
+    /// </summary>
+    public AreaType areaTypeup;
+    public AreaType areaTypedown;
+    #endregion
+
+    #region Private
     ///<summary>
     ///Music-Music object
     /// </summary>
@@ -59,9 +77,6 @@ public class MusicManger : MonoBehaviour
     /// </summary>
     private CanvasGroup groupFinal;
 
-    #endregion
-
-    #region 事件
     /// <summary>
     /// starup
     /// </summary>
@@ -72,6 +87,52 @@ public class MusicManger : MonoBehaviour
     /// </summary>
     private ParticleSystem psDown;
 
+    /// <summary>
+    /// 用來保存進入檢查區域的的音樂節點-用來刪除用
+    /// </summary>
+    private GameObject objPointup;
+    private GameObject objPointdown;
+
+    /// <summary>
+    /// 文字介面:分數
+    /// </summary>
+    private Text textScore;
+
+    /// <summary>
+    /// score
+    /// </summary>
+    private int score;
+
+    /// <summary>
+    /// get canvas
+    /// </summary>
+    private Transform traCanvas;
+
+    ///<summary>
+    ///打擊文字上方位置
+    ///</summary>
+    private Vector2 v2TextUP = new Vector2(-172, 25);
+
+    ///<summary>
+    ///打擊文字下方位置
+    ///</summary>
+    private Vector2 v2TextDown = new Vector2(-172, -100);
+    
+    /// <summary>
+    ///介面文字:連擊數量 
+    /// </summary>
+    private Text textCombo;
+
+    /// <summary>
+    /// 連擊數量
+    /// </summary>
+    private int Combo;
+
+    #endregion
+
+    #endregion
+
+    #region 事件
     private void OnDrawGizmos()
     {
         Gizmos.color = new Color(0, 0, 1, 0.8f);
@@ -80,6 +141,13 @@ public class MusicManger : MonoBehaviour
         Gizmos.DrawSphere(pointCheckup.position, rangeGood);
         Gizmos.color = new Color(1, 0, 0, 0.5f);
         Gizmos.DrawSphere(pointCheckup.position, rangeMiss);
+
+        Gizmos.color = new Color(0, 0, 1, 0.8f);
+        Gizmos.DrawSphere(pointCheckdown.position, rangePerfect);
+        Gizmos.color = new Color(0, 1, 0, 0.3f);
+        Gizmos.DrawSphere(pointCheckdown.position, rangeGood);
+        Gizmos.color = new Color(1, 0, 0, 0.5f);
+        Gizmos.DrawSphere(pointCheckdown.position, rangeMiss);
     }
 
 
@@ -100,7 +168,15 @@ public class MusicManger : MonoBehaviour
 
         Invoke("StartMusic", musicdata.timeWait); //等待後開始生成
 
-        textScore = GameObject.Find("分數").GetComponent<Text>();
+        textScore = GameObject.Find("score").GetComponent<Text>();
+
+        psUp = GameObject.Find("starup").GetComponent<ParticleSystem>();
+        psDown = GameObject.Find("stardown").GetComponent<ParticleSystem>(); 
+        traCanvas = GameObject.Find("畫布").GetComponent<Transform>();
+
+        #region get object
+        textCombo = GameObject.Find("combo").GetComponent<Text>();
+        #endregion
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -110,8 +186,10 @@ public class MusicManger : MonoBehaviour
 
     private void Update()
     {
-        Checkpoint();
-        Clickcheck();
+        Checkpoint(pointCheckup,nameup,out objPointup,out areaTypeup);
+        Clickcheck(KeyCode.J,areaTypeup,objPointup,v2TextUP);
+        Checkpoint(pointCheckdown, namedown, out objPointdown, out areaTypedown);
+        Clickcheck(KeyCode.R, areaTypedown, objPointdown, v2TextDown);
     }
     #endregion
 
@@ -186,41 +264,50 @@ public class MusicManger : MonoBehaviour
     }
 
     /// <summary>
-    /// 用來保存進入檢查區域的的音樂節點-用來刪除用
+    /// check what area dose the point in. 
     /// </summary>
-    private GameObject objPoint;
-
-    private void Checkpoint()
+    /// <param name="pointcheck"></param>
+    /// <param name="name"></param>
+    /// <param name="objpoint"></param>
+    /// <param name="areaType"></param>
+    private void Checkpoint(Transform pointcheck,string name, out GameObject objpoint, out AreaType areaType)
     {
-        Collider2D hitMiss = Physics2D.OverlapCircle(pointCheckup.position, rangeMiss);
-        Collider2D hitGood = Physics2D.OverlapCircle(pointCheckup.position, rangeGood);
-        Collider2D hitPerfect = Physics2D.OverlapCircle(pointCheckup.position, rangePerfect);
+        Collider2D hitMiss = Physics2D.OverlapCircle(pointcheck.position, rangeMiss);
+        Collider2D hitGood = Physics2D.OverlapCircle(pointcheck.position, rangeGood);
+        Collider2D hitPerfect = Physics2D.OverlapCircle(pointcheck.position, rangePerfect);
 
-        if(hitPerfect && hitPerfect.name.Contains(nameup))
+        if(hitPerfect && hitPerfect.name.Contains(name))
         {
             areaType = AreaType.perfect;
-            objPoint = hitPerfect.gameObject;
+            objpoint = hitPerfect.gameObject;
         }
-        else if (hitGood && hitGood.name.Contains(nameup))
+        else if (hitGood && hitGood.name.Contains(name))
         {
             areaType = AreaType.good;
-            objPoint = hitGood.gameObject;
+            objpoint = hitGood.gameObject;
         }
-        else if (hitMiss && hitMiss.name.Contains(nameup))
+        else if (hitMiss && hitMiss.name.Contains(name))
         {
             areaType = AreaType.miss;
-            objPoint = hitMiss.gameObject;
+            objpoint = hitMiss.gameObject;
         }
         else
         {
             areaType = AreaType.none;
-            objPoint = null;
+            objpoint = null;
         }
     }
 
-    private void Clickcheck()
+    /// <summary>
+    /// keydown check
+    /// </summary>
+    /// <param name="key">案件</param>
+    /// <param name="areaType">區域類型</param>
+    /// <param name="objPoint">要刪除的節點</param>
+    /// <param name="v2Text">文字檢查位置</param>
+    private void Clickcheck(KeyCode key,AreaType areaType,GameObject objPoint,Vector2 v2Text)
     {
-        if (Input.GetKeyDown(KeyCode.F))
+        if (Input.GetKeyDown(key))
         {
             switch (areaType)
             {
@@ -229,29 +316,22 @@ public class MusicManger : MonoBehaviour
                 case AreaType.perfect:
                     AddScore(30);
                     Destroy(objPoint);
+                    StartCoroutine(ShowText("Perfect", v2Text, cPerfect));
                     psUp.Play();
                     break;
                 case AreaType.good:
                     AddScore(15);
                     Destroy(objPoint);
                     psUp.Play();
+                    StartCoroutine(ShowText("Good", v2Text, cGood));
                     break;
                 case AreaType.miss:
                     Destroy(objPoint);
+                    StartCoroutine(ShowText("Miss", v2Text,cMiss));
                     break;
             }
         }
     }
-
-    /// <summary>
-    /// 文字介面:分數
-    /// </summary>
-    private Text textScore;
-
-    /// <summary>
-    /// score
-    /// </summary>
-    private int score;
 
     /// <summary>
     /// 添加分數
@@ -263,20 +343,40 @@ public class MusicManger : MonoBehaviour
         textScore.text = "Score:" + score;
     }
 
-    [Header("打擊文字")]
-    public GameObject objClickText;
-
     /// <summary>
     /// show perfect
     /// </summary>
     /// <param name="showText">show text which I want to show.</param>
+    /// <param name="v2Pos">座標</param>
+    /// <param name="color">Color</param>
     /// <returns></returns>
-    private IEnumerator ShowText(string showText)
+    private IEnumerator ShowText(string showText,Vector2 v2Pos, Color color)
     {
-        GameObject temp = Instantiate(objClickText);
+        GameObject temp = Instantiate(objClickText, traCanvas);
         Text tempText = temp.GetComponent<Text>();
         tempText.text = showText;
-        yield return new WaitForSeconds(0.1f);
+
+        RectTransform rect = temp.GetComponent<RectTransform>();
+        tempText.color = color;
+        rect.anchoredPosition = v2Pos;
+        #region 上升效果
+        float up = 10;
+
+        for(int i = 0; i < 10; i++)
+        {
+            rect.anchoredPosition += Vector2.up * up;
+            yield return new WaitForSeconds(0.02f);
+        }
+        #endregion
+
+        #region 淡出
+        for (int i = 0; i < 10; i++)
+        {
+            tempText.color-=new Color(0,0,0,0.1f);
+            yield return new WaitForSeconds(0.02f);
+        }
+        Destroy(temp);
+        #endregion
     }
     #endregion
 

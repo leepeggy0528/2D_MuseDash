@@ -88,7 +88,7 @@ public class player : MonoBehaviour
     /// </summary>
     public bool dead()
     {
-        ani.SetBool("dead", true);
+        ani.SetBool("dead", blood <= 0);
         return ani.GetBool("dead");
     }
 
@@ -113,7 +113,9 @@ public class player : MonoBehaviour
 
         private void Update()
         {
-        if (dead()) return;    
+        if (dead()) return;
+        Jump();
+        attack();
         }
 
         //繪製圖示:輔助用
