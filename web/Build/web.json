@@ -1,7 +1,7 @@
 {
 "companyName": "Lee",
-"productName": "Lee:2D_MuseDash(pratice)",
-"productVersion": "0.1",
+"productName": "2D_MuseDash",
+"productVersion": "1.0",
 "dataUrl": "web.data.unityweb",
 "wasmCodeUrl": "web.wasm.code.unityweb",
 "wasmFrameworkUrl": "web.wasm.framework.unityweb",
@@ -12,5 +12,5 @@
 "cacheControl": {"default": "must-revalidate"},
 "developmentBuild": false,
 "multithreading": false,
-"unityVersion": "2019.4.14f1"
+"unityVersion": "2019.4.15f1"
 }
